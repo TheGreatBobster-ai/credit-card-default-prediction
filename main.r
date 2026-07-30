@@ -1,41 +1,39 @@
-# This script provides a complete end-to-end workflow for your final project
-# Follow this structure to develop your machine learning model
+################################################################################
+# CREDIT CARD DEFAULT PREDICTION
+################################################################################
 #
-# PROJECT REQUIREMENTS CHECKLIST:
-# ✓ Descriptive analysis of outcome variable and predictors
-# ✓ Visual/tabular representation of descriptive results
-# ✓ Clear explanation of modeling procedure
-# ✓ At least 4 different forecasting models
-# ✓ At least 2 models must use cross-validation
-# ✓ Brief explanation of methods and their evaluation
+# This script contains the complete workflow used for predicting credit card
+# default. It covers the entire process from loading and exploring the data
+# to training, tuning and evaluating multiple machine learning models.
 #
+# Workflow:
+# - Load and inspect the data
+# - Perform exploratory data analysis
+# - Preprocess the data
+# - Create additional features
+# - Split the data into training, validation and holdout sets
+# - Train and tune different classification models
+# - Compare model performance using multiple evaluation metrics
+# - Optimize classification thresholds based on economic costs
+# - Evaluate the final models on unseen data
+#
+# Models included:
+# - Logistic Regression
+# - Lasso Regression
+# - Ridge Regression
+# - Decision Tree
+# - Random Forest
+# - Gradient Boosting
+#
+# Since the dataset is imbalanced, class weights are incorporated during model
+# training. Instead of relying only on traditional metrics such as accuracy or
+# ROC AUC, the models are also evaluated from a business perspective by assigning
+# different costs to false positives and false negatives.
+#
+# A fixed random seed is used throughout the analysis to ensure reproducibility.
+#
+################################################################################
 
-################################################################################
-#                    FINAL PROJECT COMPLETE TEMPLATE                           #
-#                    CLASSIFICATION PROBLEM FOCUS                              #
-################################################################################
-# 
-# This script provides a complete end-to-end workflow for your final project
-# Follow this structure to develop your machine learning classification model
-#
-# EXAMPLE DATASET: Titanic Survival Prediction
-# We use the Titanic dataset as an example to demonstrate the complete workflow.
-# This dataset is different from credit card default prediction, insurance claims,
-# or other common student projects - preventing direct copying while teaching
-# the same ML principles that apply to any classification problem.
-#
-# PROJECT REQUIREMENTS CHECKLIST:
-# ✓ Descriptive analysis of outcome variable and predictors
-# ✓ Visual/tabular representation of descriptive results
-# ✓ Clear explanation of modeling procedure
-# ✓ At least 4 different forecasting models
-# ✓ At least 2 models must use cross-validation
-# ✓ Brief explanation of methods and their evaluation
-#
-################################################################################
-
-setwd("C:/Users/rpuse/OneDrive/Dokumente/University/UniLu Master/Computer Science/Supervised_ML/Project/Data/")
-getwd()
 
 ################################################################################
 # SECTION 1: SETUP AND PACKAGE INSTALLATION (5% of workflow)
@@ -81,7 +79,7 @@ set.seed(123)
 list.files()
 
 # Loading data
-data <- read_excel("data_creditcard.xls")
+data <- read_excel("data/data_creditcard.xls")
 
 data <- data[-1, ]
 
@@ -143,20 +141,10 @@ data <- data %>%
     DEFAULT       = Y       # Our Target Variable
   )
 
-# Note: Data is still in raw format (Survived = 0/1, Pclass = 1/2/3, etc.)
-# This allows us to explore the raw data in Section 3 before making preprocessing decisions
-
 
 ################################################################################
 # SECTION 3: EXPLORATORY DATA ANALYSIS   
 ################################################################################
-# This is CRITICAL for your final report!
-# You need to understand your data before modeling
-#
-# IMPORTANT: In this section, we explore the RAW data (before conversions)
-# - You'll see numeric codes: Survived = 0/1, Pclass = 1/2/3, etc.
-# - This helps us discover what needs to be converted/cleaned
-# - We'll make informed preprocessing decisions in Section 4 based on these findings
 
 cat("\n\n########## EXPLORATORY DATA ANALYSIS ##########\n\n")
 
@@ -186,11 +174,7 @@ if(sum(missing_count) > 0) {
 
 # 3.3: Target Variable Analysis (MOST IMPORTANT!)
 cat("\n=== TARGET VARIABLE ANALYSIS ===\n")
-# Replace 'Survived' with your target variable name
-target_var <- "DEFAULT"  # CHANGE THIS to your target variable
-
-# Note: At this stage, you'll see raw values (0/1 for Survived, 1/2/3 for Pclass)
-# This is intentional - we explore the raw data first, then convert in Section 4
+target_var <- "DEFAULT"
 
 
 # Frequency table
@@ -375,7 +359,7 @@ for (v in names(valid_list)) {
 ################################################################################
 # SECTION 4: DATA PREPROCESSING    
 ################################################################################
-# This section prepares your data for machine learning models
+# This section prepares data for machine learning models
 
 cat("\n\n########## DATA PREPROCESSING ##########\n\n")
 
@@ -390,14 +374,12 @@ data$DEFAULT <- factor(data$DEFAULT, levels = c(0, 1), labels = c("No", "Yes"))
 # quick check
 unique(data$DEFAULT)
 
-cat("Converted Survived to factor: 0 -> No, 1 -> Yes\n")
-
 # 2) Convert SEX to factor with descriptive labels -----------------------------
 data$SEX <- factor(data$SEX, levels = c(1, 2), labels = c("male", "female"))
 
 # quick check
 unique(data$SEX)
-cat("Converted Pclass to factor with labels: First, Second, Third\n")
+cat("Converted SEX to factor with labels: male, female\n")
 
 # 3) Convert Education to factor -----------------------------------------------
 data$EDUCATION <- ifelse(data$EDUCATION %in% c(0, 5, 6),
@@ -417,8 +399,6 @@ data$EDUCATION <- factor(data$EDUCATION,
 # quick check
 unique(data$EDUCATION)
 
-cat("Converted Sex to factor\n")
-
 # 4) Convert MARRIAGE to factor ------------------------------------------------
 data$MARRIAGE <- ifelse(data$MARRIAGE == 0,
                          3,
@@ -435,10 +415,6 @@ data$MARRIAGE <- factor(data$MARRIAGE,
 
 # quick check
 unique(data$MARRIAGE)
-
-cat("Converted Sex to factor\n")
-
-
 
 # Handle missing Embarked values
 
@@ -507,9 +483,6 @@ range(data$AGE)
 # in the rest of the data, outliers carry important information and will thus not be cut
 
 cat("\n=== OUTLIER HANDLING ===\n")
-cat("Note: Be cautious about removing outliers - they might be valid data points!\n")
-cat("For this template, we'll keep all data points.\n")
-cat("If you need to handle outliers:\n")
 cat("  - Option 1: Winsorization (cap at certain percentiles)\n")
 cat("  - Option 2: Transformation (log, sqrt)\n")
 cat("  - Option 3: Remove extreme outliers (justify in report!)\n")
@@ -766,7 +739,7 @@ print(prop.table(table(train_data[[target_var]])))
 cat("\nClass distribution in test set:\n")
 print(prop.table(table(test_data[[target_var]])))
 
-# 4.5.3: Feature Scaling (Important for some models!)
+# 4.5.3: Feature Scaling
 cat("\n=== FEATURE SCALING ===\n")
 cat("Note: Some models (SVM, Neural Networks) require scaled features\n")
 cat("Tree-based models (Random Forest, Gradient Boosting) don't require scaling\n")
@@ -863,7 +836,6 @@ cat(sprintf("\nUsing BASE class weight (Yes vs No=1): %.2f\n", w_base))
 
 cat("\n\n########## MODEL BUILDING ##########\n\n")
 
-# Define cross-validation strategy (IMPORTANT!)
 # We'll use 10-fold cross-validation for all models
 ctrl <- trainControl(
   method = "cv",              # Cross-validation
