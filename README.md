@@ -78,9 +78,12 @@ Several additional features were created to better capture repayment behaviour, 
 ![Variable Importance](images/variable-importance.png)
 
 
-The complete methodology, experiments, visualizations and discussion are available in:
 
-📄 **Credit_Card_Default_Report.pdf**
+## Full Report
+
+A detailed description of the methodology, experiments, results, and discussion is available in:
+
+📄 **[credit-card-default-report.pdf](credit-card-default-report.pdf)**
 
 ---
 
