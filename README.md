@@ -92,8 +92,8 @@ A detailed description of the methodology, experiments, results, and discussion 
 
 ```
 .
-├── credit_default_prediction.R
-├── Credit_Card_Default_Report.pdf
+├── main.R
+├── credit_card_default_report.pdf
 ├── data/
 │   └── data_creditcard.xlsx
 └── README.md
