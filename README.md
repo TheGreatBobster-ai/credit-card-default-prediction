@@ -1,6 +1,6 @@
 # Cost-Sensitive Credit Card Default Prediction
 
-An end-to-end machine learning pipeline for predicting credit card default using six supervised learning algorithms. Instead of selecting models solely based on ROC-AUC, this project incorporates asymmetric business costs and cost-sensitive threshold optimization to better reflect real-world credit risk decisions.
+My first ever Machine-Learning Project: An end-to-end machine learning pipeline for predicting credit card default using six supervised learning algorithms. Instead of selecting models solely based on ROC-AUC, this project incorporates asymmetric business costs and cost-sensitive threshold optimization to better reflect real-world credit risk decisions.
 
 ---
 
