@@ -48,11 +48,12 @@ The final models are evaluated on an **unseen holdout dataset** that was not use
 - Exploratory data analysis
 - Feature engineering
 - Stratified train / validation / holdout split
-- Handling class imbalance through class weighting
+- Class-imbalance handling through weighted and unweighted model specifications
 - Hyperparameter tuning using cross-validation
-- Model evaluation (ROC-AUC, Accuracy, Sensitivity, Specificity)
-- Cost-sensitive threshold optimization
-- Final evaluation on an unseen holdout dataset
+- Model evaluation using ROC-AUC, Accuracy, Sensitivity, and Specificity
+- Construction of an asymmetric business-cost function
+- Cost-sensitive classification-threshold optimization
+- Final evaluation using fixed thresholds on unseen holdout data
 
 ---
 
@@ -66,6 +67,39 @@ Several additional features were created to better capture repayment behaviour, 
 - Maximum historical payment delay
 - Bill trend over time
 - Payment variability
+
+---
+
+## Class Imbalance and Business Cost Optimization
+
+### Handling Class Imbalance
+
+The dataset is substantially imbalanced, with approximately **78% non-defaults and 22% defaults**.
+
+To account for this, default observations were given a weight of approximately **3.55** (78/22), while non-default observations kept a weight of 1. This gives mistakes on default cases more importance during model training.
+
+For comparison, all models were also trained without class weights to assess how weighting affects the results.
+
+### Business Cost Framework
+
+Since incorrectly predicting a default and missing an actual default do not have the same economic consequences, I constructed a simple business cost function to account for this difference.
+
+The costs were approximated based on the dataset and typical credit-risk assumptions:
+
+- **Missed default (~$920):** estimated using the customer's outstanding balance as exposure at default (EAD) and assuming a **60% loss given default (LGD)** (default is not always = full loss, but on average typically 60%).
+- **Rejected non-defaulting customer (~$210):** estimated as foregone interest income based on customer transaction volume, an assumed **2% interest rate**, and an expected customer lifetime of **5 years** (values typical for time and environment of dataset - taiwan 2005).
+
+This results in an approximate cost ratio of **4.5:1**, meaning that missing an actual default is considerably more expensive than incorrectly rejecting a customer who would not have defaulted.
+
+For each model, the classification threshold is therefore chosen to minimize:
+
+**Expected Cost = Cost_FN × False Negatives + Cost_FP × False Positives**
+
+Instead of simply using the standard 0.5 threshold, thresholds between **0.01 and 0.99** are tested and the threshold with the lowest expected cost is selected.
+
+Importantly, threshold optimization is performed before the final evaluation. The selected threshold is then fixed and applied to unseen data, avoiding information from the evaluation data entering the threshold selection.
+
+The resulting business costs should be interpreted as estimates under the assumptions above rather than actual realized financial savings.
 
 ---
 
