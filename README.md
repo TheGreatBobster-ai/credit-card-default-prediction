@@ -1,14 +1,20 @@
 # Cost-Sensitive Credit Card Default Prediction
 
-My first ever Machine-Learning Project: An end-to-end machine learning pipeline for predicting credit card default using six supervised learning algorithms. Instead of selecting models solely based on ROC-AUC, this project incorporates asymmetric business costs and cost-sensitive threshold optimization to better reflect real-world credit risk decisions.
+My first machine-learning project: an end-to-end classification pipeline for predicting credit card default using six supervised learning algorithms, with model selection based not only on predictive performance but also on **asymmetric business costs and cost-sensitive threshold optimization**.
+
+> **Key Result:** Gradient Boosting achieved the lowest expected business cost on the unseen test set. For a hypothetical portfolio of one million customers, the model reduces expected costs from **$202.18M without customer selection to $102.47M — a reduction of approximately 49%**. It also reduces costs by **7.23% ($8.0M) relative to Logistic Regression**, despite Random Forest achieving a slightly higher ROC-AUC.
 
 ---
 
 ## Project Overview
 
-Credit card default prediction is a classic binary classification problem with highly asymmetric costs. Missing a future default can lead to substantial financial losses, whereas incorrectly rejecting a creditworthy customer mainly results in opportunity costs.
+Credit card default prediction is a binary classification problem with highly asymmetric economic consequences. Missing a future default can lead to substantial financial losses, whereas incorrectly rejecting a creditworthy customer primarily results in lost business opportunities.
 
-This project compares six machine learning models under both traditional classification metrics and a business-oriented cost framework. The objective is not simply to maximize predictive performance, but to minimize expected financial losses.
+This creates an important distinction between **predictive accuracy and economic performance**: the model with the highest ROC-AUC is not necessarily the model that leads to the best lending decisions.
+
+This project therefore compares six machine-learning models under both conventional classification metrics and an explicit business-cost framework. Classification thresholds are optimized based on expected economic costs rather than using the conventional 0.5 cutoff.
+
+The final models are evaluated on an **unseen holdout dataset** that was not used for model or threshold selection.
 
 ---
 
@@ -50,11 +56,38 @@ Several additional features were created to better capture repayment behaviour, 
 
 ---
 
+## Business Impact
+
+The cost-sensitive evaluation illustrates why predictive performance alone is insufficient for model selection.
+
+Assuming a hypothetical portfolio of **one million customers**, expected costs on the unseen test set are:
+
+| Model | Test AUC | Optimal Threshold | Expected Cost | Cost Reduction vs. No Selection | Improvement vs. Logistic Regression |
+|---|---:|---:|---:|---:|---:|
+| Logistic Regression | 0.748 | 0.53 | $110.47M | 45% | — |
+| Lasso Regression | 0.748 | 0.53 | $110.20M | 45% | 0.23% |
+| Ridge Regression | 0.747 | 0.52 | $110.30M | 45% | 0.15% |
+| Decision Tree | 0.767 | 0.43 | $105.36M | 48% | 4.63% |
+| Random Forest | **0.795** | 0.38 | $109.34M | 46% | 1.02% |
+| **Gradient Boosting** | 0.793 | 0.45 | **$102.47M** | **49%** | **7.23%** |
+
+Without customer selection, expected costs are approximately **$202.18M**.
+
+The comparison demonstrates the central result of the project: **the model with the highest ROC-AUC is not necessarily the model with the lowest economic cost**. Random Forest achieves the highest test AUC (0.795), but Gradient Boosting produces substantially lower expected costs after threshold optimization.
+
+Compared with the Logistic Regression baseline, Gradient Boosting reduces expected costs by approximately **$8.0M per one million customers**, corresponding to an additional **7.23% cost reduction**.
+
+> Costs represent expected economic consequences of a single hypothetical credit-approval round under the assumptions defined in the project and should not be interpreted as realized historical savings.
+
+---
+
 ## Key Findings
 
-- Traditional ROC-AUC alone was not sufficient for selecting the economically best model.
-- Gradient Boosting achieved the lowest expected business costs after threshold optimization.
-- Threshold stability proved to be an important indicator of model generalization.
+- **Gradient Boosting achieved the lowest expected test-set cost ($102.47M)**, reducing expected costs by approximately **49% compared with accepting all customers** under the assumed business-cost framework.
+- **The highest-AUC model was not the economically optimal model:** Random Forest achieved the highest test AUC (0.795), while Gradient Boosting (0.793) produced substantially lower expected costs.
+- Cost-sensitive threshold optimization improved decision-making beyond the conventional 0.5 classification threshold.
+- Compared with Logistic Regression, Gradient Boosting reduced expected costs by approximately **$8.0M per one million customers (7.23%)**.
+- Threshold stability provided additional information about model generalization.
 - Recent payment behaviour was substantially more informative than demographic variables.
 
 ---
@@ -83,7 +116,7 @@ Several additional features were created to better capture repayment behaviour, 
 
 A detailed description of the methodology, experiments, results, and discussion is available in:
 
-📄 **[credit-card-default-report.pdf](credit-card-default-report.pdf)**
+📄 **[credit_card_default_report.pdf](report/credit_card_default_report.pdf)**
 
 ---
 
@@ -92,10 +125,17 @@ A detailed description of the methodology, experiments, results, and discussion 
 
 ```
 .
-├── main.R
-├── credit_card_default_report.pdf
 ├── data/
 │   └── data_creditcard.xlsx
+│
+├── R/
+│   └── main.r
+│
+├── report/
+│   └── credit_card_default_report.pdf
+│
+├── .gitignore/
+├── license/
 └── README.md
 ```
 
