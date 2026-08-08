@@ -4,6 +4,19 @@ My first machine-learning project: an end-to-end classification pipeline for pre
 
 > **Key Result:** Gradient Boosting achieved the lowest expected business cost on the unseen test set. For a hypothetical portfolio of one million customers, the model reduces expected costs from **$202.18M without customer selection to $102.47M — a reduction of approximately 49%**. It also reduces costs by **7.23% ($8.0M) relative to Logistic Regression**, despite Random Forest achieving a slightly higher ROC-AUC.
 
+**Key Overview:** For a hypothetical portfolio of **one million customers** 2005 Taiwan, all models substantially reduce expected costs relative to accepting every applicant. Gradient Boosting produces the largest economic benefit.
+
+| Model | Cost Reduction | Additional Reduction vs. Logistic Regression |
+|---|---:|---:|
+| Logistic Regression | $91.72M | — |
+| Lasso Regression | $91.97M | $0.27M |
+| Ridge Regression | $91.88M | $0.17M |
+| Decision Tree | $96.83M | $5.11M |
+| Random Forest | $92.84M | $1.12M |
+| **Gradient Boosting** | **$99.71M** | **$7.99M** |
+
+*Expected cost reductions per one million customers under the project's business-cost assumptions.*
+
 ---
 
 ## Project Overview
